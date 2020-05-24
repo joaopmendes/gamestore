@@ -1,10 +1,23 @@
-const express = require('express')
-const path = require('path')
-const PORT = process.env.PORT || 5000
+require("dotenv").config();
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const routes = require("./routes/api");
+const path = require("path");
+const app = express();
+// Public Folder
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "frontend/build")));
+app.use(bodyParser.urlencoded());
+app.use(express.json());
+app.use("/api", routes);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/frontend/build/index.html"));
+});
 
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.render('pages/index'))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+mongoose
+  .connect(process.env.MONGOOSE_URL, { useNewUrlParser: true })
+  .then((ok) => console.log("Connected to db"))
+  .catch((err) => console.log(err));
+
+app.listen(process.env.PORT || 4000);
