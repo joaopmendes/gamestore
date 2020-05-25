@@ -7,8 +7,6 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "yarn nodemon index.js",
-    "test": "node test.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
@@ -18,7 +16,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^2.0.4",
     "passport": "^0.4.1",
-    "passport-http-bearer": "^1.0.1"
+    "passport-google-oauth20": "^2"
   },
   "devDependencies": {
     "request": "^2.81.0",

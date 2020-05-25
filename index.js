@@ -8,7 +8,7 @@ const app = express();
 const passport = require("passport");
 
 app.use(passport.initialize());
-
+require("./PassportStrategies/google")(passport);
 // Public Folder
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "frontend/build")));
