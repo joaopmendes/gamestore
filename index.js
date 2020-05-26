@@ -10,6 +10,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "frontend/build")));
 app.use(bodyParser.urlencoded());
 app.use(express.json());
+app.use(require("morgan")("combined"));
 app.use("/api", routes);
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/frontend/build/index.html"));

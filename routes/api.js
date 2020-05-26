@@ -1,6 +1,7 @@
 const { Router } = require(`express`);
-
+const ensureAuth = require("../Middlewares/ensureAuth");
 const routes = Router();
-// Authentication Routes
-routes.get("test", () => {});
+
+//* User Router
+routes.use("/users", require("./user"));
 module.exports = routes;
