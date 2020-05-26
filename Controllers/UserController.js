@@ -1,4 +1,4 @@
-const { User } = require("../Models");
+const { User, Cart } = require("../Models");
 const uuid = require("uuid");
 const jwt = require("jsonwebtoken");
 const bc = require("bcrypt");
@@ -21,7 +21,8 @@ createUser = async (name, email, pass) => {
   const token = jwt.sign({ identifier }, process.env.JWT_KEY, { expiresIn: "1h" });
 
   try {
-    const user = await User.create({ email, password, name, identifier, token });
+    const cart = await Cart.create({ items: [], totalPrice: 0 });
+    const user = await User.create({ email, password, name, identifier, token, cart });
     if (!user) {
       return null;
     }
@@ -32,6 +33,7 @@ createUser = async (name, email, pass) => {
 };
 
 module.exports = {
+  update: async (req, res) => {},
   register: async (req, res) => {
     const { name, email, password1, password2 } = req.body;
 
@@ -96,16 +98,19 @@ module.exports = {
   },
   profile: async (req, res) => {
     console.log(req.user.identifier);
-    try {
-      const user = await User.findOne({ identifier: req.user.identifier }).select("name email admin token -_id").exec();
-      console.log("user", user);
+    // try {
+    const user = await User.findOne({ identifier: req.user.identifier })
+      .select("name email admin token cart -_id")
+      .populate("cart")
+      .exec();
+    console.log("user", user);
 
-      if (!user) {
-        throw new Error();
-      }
-      return res.status(200).json({ user });
-    } catch (e) {
-      return res.status(422).json({ errorMessage: "User Not Found" });
+    if (!user) {
+      throw new Error();
     }
+    return res.status(200).json({ user });
+    // } catch (e) {
+    //   return res.status(422).json({ errorMessage: e });
+    // }
   },
 };
