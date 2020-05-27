@@ -1,8 +1,7 @@
-const { User, Cart, Product } = require('../Models')
+const { User, Cart, Product, Address } = require('../Models')
 const uuid = require('uuid')
 const jwt = require('jsonwebtoken')
 const bc = require('bcrypt')
-const mongoose = require('mongoose')
 const getUserByEmail = async (email) => {
     try {
         const user = await User.findOne({ email })
@@ -52,18 +51,26 @@ const updateUser = async (user, { cart, addresses, email, name }) => {
                 product = await Product.findById(item)
                 console.log(product.name)
             } catch (e) {
-                throw new Error(
-                    '[USER CONTROLLER > updateUser] Could not get car instance\n' +
-                        e
-                )
+                return {
+                    isValid: false,
+                    message:
+                        'Error trying to find that product in the database.',
+                }
             }
             await user.addToCart(product)
         }
     }
-    //! Update password
 
-    if (addresses && Array.isArray(cart)) {
-        //TODO Implement update of addresses
+    if (addresses && Array.isArray(addresses)) {
+        for (const address of addresses) {
+            if (address.roadName && address.postalCode && address.locality) {
+                return {
+                    isValid: false,
+                    message:
+                        'Was not possible to create address with the provided data',
+                }
+            }
+        }
     }
     if (email) {
         user.email = email
@@ -98,10 +105,10 @@ module.exports = {
         return res.status(200).json({ user })
     },
     update: async (req, res) => {
-        const user = await updateUser(req.user, req.body)
-        if (!user) {
+        const result = await updateUser(req.user, req.body)
+        if (!result.isValid) {
             return res.status(422).json({
-                errorMessage: `We couldn't process the update of the user. Please try again later.`,
+                errorMessage: result.errorMessage,
             })
         }
         return res

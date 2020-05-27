@@ -6,6 +6,11 @@ const userSchema = new db.Schema({
     password: { type: String, required: false },
     token: { type: String, default: '' },
     admin: { type: Boolean, default: false },
+
+    /*
+        Addresses
+     */
+    addresses: [{ type: db.Schema.Types.ObjectId, ref: 'address' }],
     /*
       User's Cart
       It is a reference to Cart Model
