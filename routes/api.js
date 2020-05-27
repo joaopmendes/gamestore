@@ -1,6 +1,6 @@
 const { Router } = require(`express`);
 const models = require("../Models");
-const ensureAuth = require("../Middlewares/ensureAuth");
+// const ensureAuth = require("../Middlewares/ensureAuth");
 const routes = Router();
 
 routes.get("/teste", async (req, res) => {
@@ -8,7 +8,7 @@ routes.get("/teste", async (req, res) => {
   const userId = "5ecd964fcae2ff3fdc0111b1";
   const user = await models.User.findById(userId);
   await user.addToCart(productId);
-  res.json("test rooute");
+  return res.json("test rooute");
 });
 //* User Router
 routes.use("/users", require("./user"));
