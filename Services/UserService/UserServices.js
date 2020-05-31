@@ -3,7 +3,7 @@ const uuid = require('uuid')
 const jwt = require('jsonwebtoken')
 const bc = require('bcrypt')
 const { createError } = require('../../helpers/helpers')
-
+const mongoose = require('mongoose')
 const createUser = async (name, email, pass) => {
     try {
         const identifier = uuid.v1()
@@ -53,10 +53,20 @@ const updateUser = async (user, { cart, addresses, email, name }) => {
                 )
             }
             try {
-                const addressInstance = await new Address({
-                    ...address,
-                }).save()
-                user.addresses.push(addressInstance)
+                const id = address._id || mongoose.Types.ObjectId()
+                const addressInstance = await Address.findByIdAndUpdate(
+                    id,
+                    {
+                        ...address,
+                    },
+                    {
+                        new: true,
+                        upsert: true,
+                        setDefaultsOnInsert: true,
+                        useFindAndModify: true,
+                    }
+                ).exec()
+                if (!address._id) user.addresses.push(addressInstance)
             } catch (e) {
                 throw createError(
                     400,
@@ -65,6 +75,7 @@ const updateUser = async (user, { cart, addresses, email, name }) => {
             }
         }
     }
+
     if (email) {
         user.email = email
     }
