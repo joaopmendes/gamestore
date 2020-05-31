@@ -1,12 +1,14 @@
-const models = require("../Models");
+const models = require('../Models')
+const { createError } = require('../helpers/helpers')
 
 module.exports = {
-  index: async (req, res) => {
-    try {
-      const products = await models.Product.find();
-      return res.status(200).json({ products });
-    } catch (e) {
-      return res.status(423).json({ errorMessage: "Could not process your request." });
-    }
-  },
-};
+    index: async (req, res, next) => {
+        try {
+            return res
+                .status(200)
+                .json({ products: await models.Product.find() })
+        } catch (e) {
+            return next(createError(423, 'Could not process your request.'))
+        }
+    },
+}
