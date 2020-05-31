@@ -23,28 +23,16 @@ userSchema.methods.clearCart = async function () {
         cart = await this.model('cart').findById(this.cart)
     } catch (e) {
         console.log(`[USER > clearCart] Error Finding Cart ${this.cart}: ${e}`)
+        throw new Error('Could not clear cart')
     }
-    // await cart.addProduct(product);
     await cart.clearCart()
 }
-//! TODO: develop methods to interact with cart
 userSchema.methods.addToCart = async function (productId) {
     console.log('[USER > addToCart] Add to cart of ' + this.email)
-    let product
-    try {
-        product = await this.model('product').findById(productId)
-    } catch (e) {
-        console.log(
-            `[USER > addToCart] Error Finding Product ${productId}: ${e}`
-        )
-    }
-    let cart
-    try {
-        cart = await this.model('cart').findById(this.cart)
-    } catch (e) {
-        console.log(`[USER > addToCart] Error Finding Cart ${this.cart}: ${e}`)
-    }
-    // await cart.addProduct(product);
+    let product = await this.model('product').findById(productId)
+
+    let cart = await this.model('cart').findById(this.cart)
+
     await cart.addProduct(product)
 }
 

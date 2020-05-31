@@ -1,121 +1,36 @@
-const { User, Cart, Product, Address } = require('../Models')
-const uuid = require('uuid')
 const jwt = require('jsonwebtoken')
 const bc = require('bcrypt')
-const getUserByEmail = async (email) => {
-    try {
-        const user = await User.findOne({ email })
-        return user || null
-    } catch (err) {
-        return null
-    }
-}
-const createUser = async (name, email, pass) => {
-    const identifier = uuid.v1()
-    let password
-    try {
-        password = await bc.hash(pass, 5)
-    } catch (e) {
-        return null
-    }
-    const token = jwt.sign({ identifier }, process.env.JWT_KEY, {
-        expiresIn: '1h',
-    })
+const { createError } = require('../helpers/helpers')
+const {
+    createUser,
+    updateUser,
+} = require('../Services/UserService/UserServices')
+const {
+    getUserByEmail,
+    getUserInformation,
+} = require('../Services/UserService/helpers')
 
-    try {
-        const cart = await Cart.create({ items: [], totalPrice: 0 })
-        const user = await User.create({
-            email,
-            password,
-            name,
-            identifier,
-            token,
-            cart,
-        })
-        if (!user) {
-            return null
-        }
-        return user
-    } catch (e) {
-        return null
-    }
-}
-const updateUser = async (user, { cart, addresses, email, name }) => {
-    //! Add items to cart if there is any
-    if (cart && Array.isArray(cart)) {
-        console.log('Im here')
-        await user.clearCart()
-        for (const item of cart) {
-            let product = null
-            try {
-                product = await Product.findById(item)
-                console.log(product.name)
-            } catch (e) {
-                return {
-                    isValid: false,
-                    message:
-                        'Error trying to find that product in the database.',
-                }
-            }
-            await user.addToCart(product)
-        }
-    }
-
-    if (addresses && Array.isArray(addresses)) {
-        for (const address of addresses) {
-            if (address.roadName && address.postalCode && address.locality) {
-                return {
-                    isValid: false,
-                    message:
-                        'Was not possible to create address with the provided data',
-                }
-            }
-        }
-    }
-    if (email) {
-        user.email = email
-    }
-    if (name) {
-        user.name = name
-    }
-    try {
-        return await user.save()
-    } catch (e) {
-        return null
-    }
-}
-const getUserInformation = (user) => {
-    return User.findOne({ identifier: user.identifier })
-        .select('name email admin token cart -_id')
-        .populate({
-            path: 'cart',
-            select: '-__v',
-            populate: { path: 'items.item', select: '-__v' },
-        })
-        .exec()
-}
 module.exports = {
-    profile: async (req, res) => {
+    profile: async (req, res, next) => {
         // try {
-        const user = await getUserInformation(req.user)
-
-        if (!user) {
-            throw new Error()
+        try {
+            const user = await getUserInformation(req.user)
+            return res.status(200).json({ user })
+        } catch (e) {
+            return next(createError(400, 'User not found'))
         }
-        return res.status(200).json({ user })
     },
-    update: async (req, res) => {
-        const result = await updateUser(req.user, req.body)
-        if (!result.isValid) {
-            return res.status(422).json({
-                errorMessage: result.errorMessage,
-            })
+    update: async (req, res, next) => {
+        try {
+            await updateUser(req.user, req.body)
+            return res
+                .status(200)
+                .json({ user: await getUserInformation(req.user) })
+        } catch (e) {
+            return next(e)
         }
-        return res
-            .status(200)
-            .json({ user: await getUserInformation(req.user) })
     },
-    register: async (req, res) => {
+    register: async (req, res, next) => {
         const { name, email, password1, password2 } = req.body
 
         //* Geral validations
@@ -127,22 +42,17 @@ module.exports = {
             errorMessage = 'User is already register.'
         }
         if (errorMessage) {
-            return res.status(400).json({ errorMessage })
+            return next(createError(400, errorMessage))
         }
         //* User creation
-
-        const user = await createUser(name, email, password1)
-        if (!user) {
-            errorMessage =
-                "We couldn't process the registration right now. Please try again later."
+        try {
+            const user = await createUser(name, email, password1)
+            return res.status(201).json({ token: user.token })
+        } catch (e) {
+            return next(e)
         }
-        if (errorMessage) {
-            return res.status(422).json({ errorMessage })
-        }
-
-        return res.status(201).json({ token: user.token })
     },
-    login: async (req, res) => {
+    login: async (req, res, next) => {
         const { email, password } = req.body
         //* Geral validations
         let errorMessage
@@ -154,22 +64,18 @@ module.exports = {
             errorMessage = 'User does not exist.'
         }
         if (errorMessage) {
-            return res.status(400).json({ errorMessage })
+            return next(createError(400, errorMessage))
         }
 
         let isPasswordValid
         try {
             isPasswordValid = await bc.compare(password, user.password)
         } catch (e) {
-            return res
-                .status(422)
-                .json({ errorMessage: 'The given password is invalid.' })
+            return next(createError(422, 'Password Invalid'))
         }
 
         if (!isPasswordValid) {
-            return res
-                .status(422)
-                .json({ errorMessage: 'The given password is invalid.' })
+            return next(createError(422, 'Password Invalid'))
         }
 
         const token = jwt.sign(
@@ -180,13 +86,15 @@ module.exports = {
         user.token = token
 
         try {
-            user.save()
+            await user.save()
             return res.status(200).json({ token })
         } catch (e) {
-            return res.status(422).json({
-                errorMessage:
-                    "We couldn't process the login right now. Please try again later.",
-            })
+            return next(
+                createError(
+                    422,
+                    "We couldn't process the login right now. Please try again later."
+                )
+            )
         }
     },
 }
