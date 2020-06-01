@@ -12,6 +12,10 @@ const userSchema = new db.Schema({
      */
     addresses: [{ type: db.Schema.Types.ObjectId, ref: 'address' }],
     /*
+       Orders
+    */
+    orders: [{ type: db.Schema.Types.ObjectId, ref: 'order' }],
+    /*
       User's Cart
       It is a reference to Cart Model
      */

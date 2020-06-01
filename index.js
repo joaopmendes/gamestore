@@ -27,12 +27,16 @@ app.use((error, req, res, next) => {
     })
 })
 //* FRONTEND ROUTES
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
-// })
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
+})
 
 mongoose
-    .connect(process.env.MONGOOSE_URL, { useNewUrlParser: true })
+    .connect(process.env.MONGOOSE_URL, {
+        useNewUrlParser: true,
+        useFindAndModify: false,
+        useUnifiedTopology: true,
+    })
     .then(() => console.log('Connected to db'))
     .catch((err) => console.log(err))
 

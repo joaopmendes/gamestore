@@ -1,16 +1,22 @@
 const jwt = require('jsonwebtoken')
-const models = require('../Models')
+const { createError } = require('../helpers/helpers')
+const {
+    getUserInformationByIdentification,
+} = require('../Services/UserService/helpers')
 module.exports = async (req, res, next) => {
     try {
         const token = req.headers.authorization.split('Bearer ')[1]
         const tokenDecoded = jwt.verify(token, process.env.JWT_KEY)
-        req.user = await models.User.findOne({
-            identifier: tokenDecoded.identifier,
-        })
+        req.user = await getUserInformationByIdentification(
+            tokenDecoded.identifier
+        )
+        if (!req.user) {
+            next(createError(403, 'Token not verified.'))
+        }
+
         return next()
     } catch (e) {
-        const error = new Error('Token not verified.')
-        error.status = 403
-        next(error)
+        console.log('-> e', e)
+        next(createError(403, 'Token not verified.'))
     }
 }

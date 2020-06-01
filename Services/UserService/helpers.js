@@ -14,11 +14,55 @@ const getUserInformation = (user) => {
         .populate({
             path: 'cart',
             select: '-__v',
-            populate: { path: 'items.item', select: '-__v' },
+            populate: { path: 'items.item', select: '-__v -owner' },
+        })
+        .populate({
+            path: 'addresses',
+            select: '-__v',
+        })
+        .populate({
+            path: 'orders',
+            select: '-__v -user',
+            populate: [
+                {
+                    path: 'currentCart',
+                    select: '-__v -owner',
+                    populate: { path: 'items.item', select: '-__v' },
+                },
+                { path: 'mailingAddress', select: '-__v' },
+                { path: 'billingAddress', select: '-__v' },
+            ],
+        })
+        .exec()
+}
+const getUserInformationByIdentification = async (identifier) => {
+    return await User.findOne({ identifier: identifier })
+        .populate({
+            path: 'cart',
+            select: '-__v',
+            populate: { path: 'items.item', select: '-__v -owner' },
+        })
+        .populate({
+            path: 'addresses',
+            select: '-__v',
+        })
+        .populate({
+            path: 'orders',
+            select: '-__v -user',
+            populate: [
+                {
+                    path: 'currentCart',
+                    select: '-__v -owner',
+                    populate: { path: 'items.item', select: '-__v' },
+                },
+                { path: 'mailingAddress', select: '-__v' },
+                { path: 'billingAddress', select: '-__v' },
+            ],
         })
         .exec()
 }
 module.exports = {
     getUserByEmail,
     getUserInformation,
+    getUserInformationByIdentification,
 }
