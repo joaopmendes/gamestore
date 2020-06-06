@@ -37,7 +37,23 @@ mongoose
         useFindAndModify: false,
         useUnifiedTopology: true,
     })
-    .then(() => console.log('Connected to db'))
+    .then(async (db) => {
+        let superAdmin = await db
+            .model('user')
+            .findOne({ email: process.env.SUPER_USER_EMAIL })
+            .exec()
+        if (!superAdmin) {
+            superAdmin = require('./Services/UserService/UserServices').createUser(
+                'admin',
+                process.env.SUPER_USER_EMAIL,
+                process.env.SUPER_USER_PASSWORD
+            )
+        }
+        superAdmin.admin = true
+        await superAdmin.save()
+
+        console.log('Connected to db')
+    })
     .catch((err) => console.log(err))
 
 app.listen(process.env.PORT || 4000)

@@ -1,10 +1,11 @@
 const { Router } = require(`express`)
 const routes = Router()
-const ProductController = require('../Controllers/ProductController')
 const ProductControllerAdmin = require('../Controllers/BackOffice/ProductControllerAdmin')
-routes.get('/', ProductController.index)
-routes.post('/update', ProductControllerAdmin.store)
-routes.post('/delete', ProductControllerAdmin.remove)
-routes.post('/', ProductControllerAdmin.store)
+const ensureAuth = require('../Middlewares/ensureAuth')
+const ensureAdmin = require('../Middlewares/ensureAdmin')
+routes.get('/', ProductControllerAdmin.index)
+routes.put('/', ensureAuth, ensureAdmin, ProductControllerAdmin.store)
+routes.post('/delete', ensureAuth, ensureAdmin, ProductControllerAdmin.remove)
+routes.post('/', ensureAuth, ensureAdmin, ProductControllerAdmin.store)
 
 module.exports = routes

@@ -4,13 +4,20 @@ const { createError } = require('../../helpers/helpers')
 const createUpdateProduct = async (
     id = mongoose.Types.ObjectId(),
     name,
-    category,
+    categories,
     type,
     price
 ) => {
+    for (const categoryId of categories) {
+        try {
+            await models.Category.findById(categoryId).exec()
+        } catch (e) {
+            throw createError(404, 'Category Not Found.')
+        }
+    }
     return await models.Product.findByIdAndUpdate(
         id,
-        { name, category, type, price },
+        { name, categories, type, price },
         {
             new: true,
             upsert: true,
@@ -23,6 +30,15 @@ const deleteProductById = async (id) => {
     return await models.Product.findByIdAndDelete(id || null).exec()
 }
 module.exports = {
+    index: async (req, res, next) => {
+        try {
+            return res
+                .status(200)
+                .json({ products: await models.Product.find() })
+        } catch (e) {
+            return next(createError(423, 'Could not process your request.'))
+        }
+    },
     remove: async (req, res, next) => {
         try {
             const { ids } = req.body
@@ -42,12 +58,12 @@ module.exports = {
     },
     store: async (req, res, next) => {
         try {
-            const { id, name, category, type, price } = req.body
+            const { id, name, categories, type, price } = req.body
 
             const product = await createUpdateProduct(
                 id,
                 name,
-                category,
+                categories,
                 type,
                 price
             )
