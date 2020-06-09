@@ -31,3 +31,12 @@ export const Spacer = styled.div<{ height?: string }>`
   display: block;
   height: ${({height}) => height || '30px'};
 `;
+
+export const HeadingTitle = styled.h1`
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Balsamiq Sans', cursive;
+  text-transform: uppercase;
+  color: black;
+  margin: 1rem auto;
+`

@@ -5,11 +5,15 @@ import { authSlice } from './Store/authSlice';
 import logger from 'redux-logger';
 import { loadersSlice } from './Store/loadersSlice';
 import { controlsSlice } from './Store/controlsSlice';
+import { productSlice } from './Store/productSlice';
+import { categoriesSlice } from './Store/categoriesSlice';
 const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
     loaders: loadersSlice.reducer,
-    controls: controlsSlice.reducer
+    controls: controlsSlice.reducer,
+    products: productSlice.reducer,
+    categories: categoriesSlice.reducer,
   },
   middleware: [logger]
 });

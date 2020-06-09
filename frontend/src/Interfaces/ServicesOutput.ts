@@ -2,7 +2,7 @@
 
 
 export type ServicesOutput<T> = {
-  data: T ;
+  data: T;
   hasError: false;
 } | {
   hasError: true;

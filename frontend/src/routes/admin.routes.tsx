@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-const AdminRoute = ({ Component, ...rest }: {Component: React.FC}) => {
-  const auth = useSelector((state: any) => state.auth);
+import { isUserAdmin } from '../Store/authSlice';
+import Dashboard from '../Backoffice/Pages/Dashboard/Dashboard';
+import Categories from '../Backoffice/Pages/Categories/Categories';
+import { RootState } from '../create-store.config';
+import Products from '../Backoffice/Pages/Products/Products';
+
+const AdminRoute = ({ Component, ...rest }: any) => {
+  const admin = useSelector((state: RootState) => state.auth.user.admin);
   return (
     <Route
       {...rest}
-      render={(props: any) =>
-        auth.userLoggedIn && auth.user.isAdmin ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to="/login" />
-        )
-      }
+      render={(props) =>
+        admin ? <Component {...props as any} /> : <Redirect to="/" />}
     />
   );
 };
@@ -20,6 +21,9 @@ const AdminRoutes = () => {
   return (
     <>
       {/*<AdminRoute path="/admin/dashboard" Components={DashboardPage} />*/}
+      <AdminRoute path={'/backoffice'} exact Component={Dashboard} />
+      <AdminRoute path={'/backoffice/categories'} Component={Categories} />
+      <AdminRoute path={'/backoffice/products'} Component={Products} />
     </>
   );
 };

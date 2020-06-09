@@ -8,7 +8,7 @@ routes.post(
     '/delete',
     ensureAuth,
     ensureAdmin,
-    CategoryControllerAdmin.retrieveAll
+    CategoryControllerAdmin.remove
 )
 routes.post(
     '/',

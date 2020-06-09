@@ -6,4 +6,5 @@ export type Product = {
   name: string;
   categories: Category[];
   price: number;
+  console: string;
 }

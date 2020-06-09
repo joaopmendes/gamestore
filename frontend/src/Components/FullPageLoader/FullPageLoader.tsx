@@ -30,7 +30,7 @@ const FullPageOverLoad = styled.div`
   width: 100%;
   height: 100%;
   background: rgb(255,255,255, 0.5);
-  z-index: 100;
+  z-index: 9999;
   transition: all 1s ease-in;
 `;
 export default FullPageLoader;

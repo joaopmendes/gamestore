@@ -52,3 +52,12 @@ html, body, #root {
     height: 100%;
     font-family: 'Balsamiq Sans', cursive;
 }
+
+.activeClass, .activeClass:hover {
+    background: #ff4d23 !important;
+    color: black
+
+}
+.list-group-item {
+    background: inherit
+}

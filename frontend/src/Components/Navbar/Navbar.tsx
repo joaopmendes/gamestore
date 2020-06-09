@@ -9,6 +9,7 @@ import {
   MDBNavItem,
   MDBFormInline, MDBNavLink, MDBNavbarBrand, MDBBox, MDBContainer,
 } from 'mdbreact';
+import {NavLink} from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { authSlice, getCurrentUser, isUserLoggedIn } from '../../Store/authSlice';
 import { useAppDispatch } from '../../create-store.config';
@@ -24,7 +25,7 @@ const Navbar: FC<PropsWithChildren<Props>> = () => {
 
   return (
     <header>
-      <MDBNavbar style={{background: "hsl(210, 12%, 16%)"}} dark expand="md">
+      <MDBNavbar style={{ background: 'hsl(210, 12%, 16%)' }} dark expand="md">
         <MDBContainer>
           <MDBNavbarBrand href="/">
             <strong>Gameshop</strong>
@@ -40,15 +41,22 @@ const Navbar: FC<PropsWithChildren<Props>> = () => {
                         <div className="d-none d-md-inline">{currentUser.name}</div>
                       </MDBDropdownToggle>
                       <MDBDropdownMenu className="dropdown-default">
-                        <MDBDropdownItem href="#!">Profile</MDBDropdownItem>
+                        <MDBDropdownItem>
+                          <NavLink to={'/notimplemented'}>Profile</NavLink>
+                        </MDBDropdownItem>
+                        {currentUser.admin ? <MDBDropdownItem>
+                          <NavLink to={'/backoffice'}>Backoffice</NavLink>
+                        </MDBDropdownItem> : null}
                         <MDBDropdownItem onClick={() => {
-                          addToast('Logout successfully', {appearance: 'success'});
+                          addToast('Logout successfully', { appearance: 'success' });
                           dispatch(authSlice.actions.logout());
-                        }}>Logout</MDBDropdownItem>
+                        }}>
+                          <NavLink to={'/'}>Logout</NavLink>
+                        </MDBDropdownItem>
                       </MDBDropdownMenu>
                     </MDBDropdown>
                   </MDBNavItem>
-                </> :<>
+                </> : <>
                   <MDBNavItem>
                     <MDBNavLink to="/register">Sign In</MDBNavLink>
                   </MDBNavItem>

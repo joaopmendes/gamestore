@@ -21,11 +21,14 @@ module.exports = {
             } else {
                 idsParsed = ids
             }
+            console.log("ids", ids)
+            console.log(idsParsed)
             for (const id of idsParsed) {
                 await CategoryService.deleteById(id)
             }
             return res.status(200).json({ message: 'Deleted' })
         } catch (e) {
+            console.log(e);
             return next(createError(500, 'Unable to remove ids'))
         }
     },
@@ -34,6 +37,7 @@ module.exports = {
             const category = await CategoryService.createUpdateCategory(
                 req.body
             )
+            console.log("category", category);
             return res.status(200).json({ category })
         } catch (e) {
             return next(e)
