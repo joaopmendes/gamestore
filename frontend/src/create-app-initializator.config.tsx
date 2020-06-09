@@ -5,9 +5,10 @@ import { authSlice, getUserToken } from './Store/authSlice';
 import { useAppDispatch } from './create-store.config';
 import { loadersSlice } from './Store/loadersSlice';
 import UserService from './Services/UserService';
+import jwtDecode from 'jwt-decode';
 
 
-export const AppInitializator: FC<PropsWithChildren<{}>> = ({children}) => {
+export const AppInitializator: FC<PropsWithChildren<null>> = ({children}) => {
   const userToken = useSelector(getUserToken);
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -26,6 +27,10 @@ export const AppInitializator: FC<PropsWithChildren<{}>> = ({children}) => {
     (async () => {
       const token = localStorage.getItem('token');
       if(token && !userToken) {
+        if ((jwtDecode(token) as any)?.exp < Date.now() / 1000) {
+          localStorage.removeItem('token');
+          return;
+        }
         dispatch(loadersSlice.actions.addLoader('APP_INITIALIZATOR'));
         const response = await UserService.getUserInfo(token);
         if(response.hasError) {

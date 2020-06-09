@@ -28,7 +28,7 @@ const NormalRoutes = () => {
     <>
       <Route path={'/'} exact render={() => <Home/>}/>
       <OnlyNotLoginRoute path="/register" Component={Register}/>
-      <OnlyNotLoginRoute path="/login" Component={Login}/>
+      <OnlyNotLoginRoute path="/Login" Component={Login}/>
       {/* <OnlyLoginRoute path="/manage" Components={RegisterPage} /> */}
     </>
   );

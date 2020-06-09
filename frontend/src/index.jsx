@@ -12,10 +12,11 @@ import './global.css';
 import FullPageLoader from './Components/FullPageLoader/FullPageLoader';
 import { AppInitializator } from './create-app-initializator.config';
 
+
 const App = () => (
   <StyledTheme>
     <ReduxStore>
-      <ToastProvider autoDismiss autoDismissTimeout={6000}>
+      <ToastProvider placement={"top-right"} style={{zIndex: 200}} autoDismiss autoDismissTimeout={6000}>
         <FullPageLoader>
           <AppInitializator>
             <RouterConfig />

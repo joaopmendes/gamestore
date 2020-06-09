@@ -39,7 +39,7 @@ const Login: React.FC<IProps> = () => {
   const {addToast} = useToasts();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  return <MainLayout>
+  return <MainLayout footerFixedBottom={true}>
     <DefaultForm>
       <MDBContainer>
         <MDBCard>
@@ -47,7 +47,7 @@ const Login: React.FC<IProps> = () => {
             <MDBRow>
               <MDBCol md="12">
                 <DefaultFormHeaderOffset>
-                  <MDBCardHeader className="form-header peach-gradient rounded">
+                  <MDBCardHeader className="form-header blue-gradient rounded">
                     <DefaultFormTitle className="my-3">
                       <MDBIcon icon="lock"/> Login:
                     </DefaultFormTitle>

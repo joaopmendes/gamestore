@@ -9,7 +9,7 @@ const createUser = async (name, email, pass) => {
         const identifier = uuid.v1()
         const password = await bc.hash(pass, 5)
         const token = jwt.sign({ identifier }, process.env.JWT_KEY, {
-            expiresIn: '1h',
+            expiresIn: '7d',
         })
         const cart = await Cart.create({ items: [], totalPrice: 0 })
         cart.items = [];

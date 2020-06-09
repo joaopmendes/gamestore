@@ -4,10 +4,12 @@ import { Provider, useDispatch } from 'react-redux';
 import { authSlice } from './Store/authSlice';
 import logger from 'redux-logger';
 import { loadersSlice } from './Store/loadersSlice';
+import { controlsSlice } from './Store/controlsSlice';
 const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
     loaders: loadersSlice.reducer,
+    controls: controlsSlice.reducer
   },
   middleware: [logger]
 });

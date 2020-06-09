@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const OuterBackground = styled.div`
-  background: rgba(131,131,131,0.28);
   width: 100%;
   height: 100%;
 `
