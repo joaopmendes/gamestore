@@ -1,33 +1,36 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '../create-store.config';
 import Home from '../Pages/Home';
 import Register from '../Pages/Register/Register';
+import Login from '../Pages/Login/Login';
+import { isUserLoggedIn } from '../Store/authSlice';
 
 const OnlyNotLoginRoute = ({ Component, ...rest }: any) => {
-  const auth = useSelector((state: RootState) => state.auth);
-
+  const isUserLogged = useSelector(isUserLoggedIn);
   return (
     <Route
       {...rest}
       render={(props) =>
-        !auth.userLoggedIn ? <Component {...props as any} /> : <Redirect to="/" />}
+        !isUserLogged ? <Component {...props as any} /> : <Redirect to="/" />}
     />
   );
 };
 const OnlyLoginRoute = ({ Component, ...rest }: { Component: React.FC}) => {
-  const auth = useSelector((state: any) => state.auth);
-  if (!auth.userLoggedIn) {
+  const isUserLogged = useSelector(isUserLoggedIn);
+  if (!isUserLogged) {
     return <Route {...rest} render={() => <Redirect to="/" />} />;
   }
   return <Route {...rest} render={(props) => <Component {...props as any} />} />;
 };
-const NormalRoutes = () => (
-  <>
-    <Route path={'/'} exact render={() => <Home />} />
-     <Route path="/register" render={() => <Register />} />
-    {/* <OnlyLoginRoute path="/manage" Components={RegisterPage} /> */}
-  </>
-);
+const NormalRoutes = () => {
+  return (
+    <>
+      <Route path={'/'} exact render={() => <Home/>}/>
+      <OnlyNotLoginRoute path="/register" Component={Register}/>
+      <OnlyNotLoginRoute path="/login" Component={Login}/>
+      {/* <OnlyLoginRoute path="/manage" Components={RegisterPage} /> */}
+    </>
+  );
+};
 export default NormalRoutes;

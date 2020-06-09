@@ -10,13 +10,13 @@ export const DefaultForm = styled.div`
   width: 600px;
   margin: 10em auto;
   position: relative;
-`
+`;
 export const DefaultFormHeaderOffset = styled.div`
  position: absolute;
  top: -55px;
  left: 10px;
  right: 10px;
-`
+`;
 
 export const DefaultFormTitle = styled.h1`
   text-align: center;
@@ -24,4 +24,10 @@ export const DefaultFormTitle = styled.h1`
   font-family: 'Balsamiq Sans', cursive;
   text-transform: uppercase;
   color: white;
-`
+`;
+
+export const Spacer = styled.div<{ height?: string }>`
+  width: 100%;
+  display: block;
+  height: ${({height}) => height || '30px'};
+`;

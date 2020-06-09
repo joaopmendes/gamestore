@@ -3,9 +3,11 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider, useDispatch } from 'react-redux';
 import { authSlice } from './Store/authSlice';
 import logger from 'redux-logger';
+import { loadersSlice } from './Store/loadersSlice';
 const store = configureStore({
   reducer: {
-    auth: authSlice.reducer
+    auth: authSlice.reducer,
+    loaders: loadersSlice.reducer,
   },
   middleware: [logger]
 });

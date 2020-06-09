@@ -6,7 +6,8 @@ const createUpdateProduct = async (
     name,
     categories,
     type,
-    price
+    price,
+    console
 ) => {
     for (const categoryId of categories) {
         try {
@@ -17,7 +18,7 @@ const createUpdateProduct = async (
     }
     return await models.Product.findByIdAndUpdate(
         id,
-        { name, categories, type, price },
+        { name, categories, type, price, console },
         {
             new: true,
             upsert: true,
@@ -58,14 +59,15 @@ module.exports = {
     },
     store: async (req, res, next) => {
         try {
-            const { id, name, categories, type, price } = req.body
+            const { id, name, categories, type, price, console } = req.body
 
             const product = await createUpdateProduct(
                 id,
                 name,
                 categories,
                 type,
-                price
+                price,
+                console
             )
 
             return res.status(201).json({ product })

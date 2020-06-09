@@ -2,40 +2,40 @@ import React from 'react';
 import UserService from '../../Services/UserService';
 import MainLayout from '../../Components/MainLayout/MainLayout';
 import { Formik, Field, Form } from 'formik';
-import { MDBBtn, MDBCol, MDBContainer, MDBCardBody, MDBCard, MDBIcon, MDBInput, MDBRow, MDBCardHeader } from 'mdbreact';
-import { DefaultForm, DefaultFormHeaderOffset, DefaultFormTitle } from '../../global.styles';
+import {
+  MDBBtn,
+  MDBCol,
+  MDBContainer,
+  MDBCardBody,
+  MDBCard,
+  MDBIcon,
+  MDBInput,
+  MDBRow,
+  MDBCardHeader,
+  MDBLink,
+} from 'mdbreact';
+import { DefaultForm, DefaultFormHeaderOffset, DefaultFormTitle, Spacer } from '../../global.styles';
 import { useToasts } from 'react-toast-notifications';
 import * as yup from 'yup';
 import {useHistory} from 'react-router-dom';
 import { useAppDispatch } from '../../create-store.config';
 import { loadersSlice } from '../../Store/loadersSlice';
+import { authSlice } from '../../Store/authSlice';
 
-interface IProps {
-}
+interface IProps {}
 
 const validationSchema = yup.object().shape({
-  name: yup
-    .string()
-    .label('Name')
-    .required('The field name is required'),
   email: yup
     .string()
     .label('Email')
     .email()
     .required(),
-  password1: yup
+  password: yup
     .string()
     .label('Password')
     .required(),
-  password2: yup
-    .string()
-    .required()
-    .label('Confirm password')
-    .test('passwords-match', 'Passwords must match.', function(value) {
-      return this.parent.password1 === value;
-    }),
 });
-const Register: React.FC<IProps> = () => {
+const Login: React.FC<IProps> = () => {
   const {addToast} = useToasts();
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -49,47 +49,34 @@ const Register: React.FC<IProps> = () => {
                 <DefaultFormHeaderOffset>
                   <MDBCardHeader className="form-header peach-gradient rounded">
                     <DefaultFormTitle className="my-3">
-                      <MDBIcon icon="lock"/> Sign In:
+                      <MDBIcon icon="lock"/> Login:
                     </DefaultFormTitle>
                   </MDBCardHeader>
                 </DefaultFormHeaderOffset>
-                <div className="mt-5"/>
+                <Spacer height={'50px'}/>
                 <Formik
                   initialValues={{
                     email: '',
-                    name: '',
-                    password1: '',
-                    password2: '',
+                    password: '',
                   }}
                   validationSchema={validationSchema}
                   onSubmit={ async (values, actions) => {
-                    dispatch(loadersSlice.actions.addLoader('register_loader'));
-                    const response = await UserService.register(values);
-                    dispatch(loadersSlice.actions.removeLoader('register_loader'));
+                    dispatch(loadersSlice.actions.addLoader('login_loader'));
+                    const response = await UserService.login(values);
+                    dispatch(loadersSlice.actions.removeLoader('login_loader'));
 
                     if(response.hasError) {
                       addToast(response.errorMessage, {appearance: 'error'});
                       return;
                     }
-                    addToast('Registered Successfully. Please Login.', {appearance: 'success'});
-                    addToast('Being redirected to login page.', {appearance: 'info'});
-                    history.push('/login');
+                    dispatch(authSlice.actions.login(response.data.user));
+                    addToast('Login Successfully', {appearance: 'success'});
+                    addToast('Being redirected to home page.', {appearance: 'info'});
+                    history.push('/');
                     actions.setSubmitting(false);
                   }}
                   render={() => (
                     <Form>
-                      <Field
-                        name="name"
-                        render={({ field, meta }: any) => (
-                          <div>
-                            <MDBInput {...field} label={'Name'}
-                              className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
-                              icon="user" group type="text" error="wrong"
-                              success="right"/>
-                            <p style={{color: 'red'}}>{meta.touched && meta.error && meta.error}</p>
-                          </div>
-                        )}
-                      />
                       <Field
                         name="email"
                         render={({ field, meta }: any) => (
@@ -103,7 +90,7 @@ const Register: React.FC<IProps> = () => {
                         )}
                       />
                       <Field
-                        name="password1"
+                        name="password"
                         render={({ field, meta }: any) => (
                           <div>
                             <MDBInput {...field} label={'Password'}
@@ -114,20 +101,11 @@ const Register: React.FC<IProps> = () => {
                           </div>
                         )}
                       />
-                      <Field
-                        name="password2"
-                        render={({ field, meta }: any) => (
-                          <div>
-                            <MDBInput {...field} label={'Confirm Password'}
-                              className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
-                              icon="exclamation-triangle" group type="password" error="wrong"
-                              success="right"/>
-                            <p style={{color: 'red'}}>{meta.touched && meta.error && meta.error}</p>
-                          </div>
-                        )}
-                      />
+                      <p>
+                        Yet not a member? Sign In <MDBLink className={'d-inline m-0 p-0'} to={'/register'}>here</MDBLink>.
+                      </p>
                       <div className="text-center">
-                        <MDBBtn outline color="primary" type={'submit'}>Register</MDBBtn>
+                        <MDBBtn outline color="primary" type={'submit'}>Login</MDBBtn>
                       </div>
                     </Form>
                   )}
@@ -142,4 +120,4 @@ const Register: React.FC<IProps> = () => {
 
   </MainLayout>;
 };
-export default Register;
+export default Login;

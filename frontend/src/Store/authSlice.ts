@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CartItem, User } from '../Interfaces';
+import { User } from '../Interfaces';
 import { RootState } from '../create-store.config';
 
 interface IInitialState {
@@ -31,8 +31,10 @@ export const authSlice = createSlice({
     login: (state, action: PayloadAction<User>) => {
       state.userLoggedIn = true;
       state.user = action.payload;
+      localStorage.setItem('token', action.payload.token);
       return state;
     },
+
     logout: (state) => {
       state = initialState;
       return state;
@@ -43,6 +45,7 @@ export const authSlice = createSlice({
 export const isUserLoggedIn = (state: RootState) => state.auth.userLoggedIn;
 export const isUserAdmin = (state: RootState) => state.auth.user.admin;
 export const getCurrentUser = (state: RootState) => state.auth.user;
+export const getUserToken = (state: RootState) => state.auth.user.token;
 export const getUserAddresses = (state: RootState) => state.auth.user.addresses;
 export const getUserOrders = (state: RootState) => state.auth.user.orders;
 export const getUserEmail = (state: RootState) => state.auth.user.email;

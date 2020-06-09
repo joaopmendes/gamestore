@@ -5,6 +5,7 @@ const productSchema = new db.Schema({
         { type: db.Schema.Types.ObjectId, rel: 'category', default: [] },
     ],
     price: { type: Number, required: true },
+    console: { type: String, required: true },
 })
 
 module.exports = db.model('product', productSchema)
