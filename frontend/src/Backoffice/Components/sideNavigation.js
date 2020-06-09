@@ -20,7 +20,7 @@ const Brand = styled.div`
 `;
 const SideNavigation = () => {
   return (
-    <div className="sidebar-fixed position-fixed" style={{ background: 'hsl(210, 12%, 16%)', height: "100%" }}>
+    <div className="sidebar-fixed position-fixed" style={{ background: 'hsl(210, 12%, 16%)', zIndex: "2", height: "100%" }}>
       <a href="#!" className="logo-wrapper waves-effect">
         <Brand>
           <h1>
