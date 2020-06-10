@@ -16,7 +16,6 @@ import { productSlice } from '../../../../Store/productSlice';
 import { SelectField } from '../../../Components/SelectField';
 import { loadersSlice } from '../../../../Store/loadersSlice';
 import ProductService from '../../../../Services/ProductService';
-import { Category } from '../../../../Interfaces';
 import { CreateUpdateProduct } from '../../../../Services/ProductService/interface';
 
 const ProductCreateEdit = () => {
@@ -37,6 +36,7 @@ const ProductCreateEdit = () => {
           name: '',
           price: 0,
           console: '',
+          productImage: '',
         },
         editMode: false,
         open: false,
@@ -46,9 +46,10 @@ const ProductCreateEdit = () => {
   const initialState = {
     id: editMode ? editProduct._id : null,
     name: editMode ? editProduct.name : '',
-    categories: editMode ? editProduct.categories.map(cat => ({label: cat.name, value: cat._id})) : [],
+    categories: editMode ? editProduct.categories.map(cat => ({ label: cat.name, value: cat._id })) : [],
     price: editMode ? editProduct.price : 0,
     console: editMode ? editProduct.console : '',
+    productImage: '',
 
   };
   const validationSchema = yup.object().shape({
@@ -70,14 +71,16 @@ const ProductCreateEdit = () => {
   return (
     <MDBContainer>
       <MDBModal isOpen={open} toggle={resetModal} inline={false} noClickableBodyWithoutBackdrop={false}
-                overflowScroll={false}>
+        overflowScroll={false}>
         <MDBModalHeader toggle={resetModal}>{editMode ? 'Edit Product' : 'Create Product'}</MDBModalHeader>
         <MDBModalBody>
           <Formik
             initialValues={initialState}
             validationSchema={validationSchema}
             onSubmit={async (values, actions) => {
+              console.log(values);
               dispatch(loadersSlice.actions.addLoader('CREATE_EDIT_PRODUCT_LOADER'));
+
               const servicePayload: CreateUpdateProduct = {
                 ...values,
                 categories: values.categories.reduce((acc: string[], curr: any) => {
@@ -115,9 +118,9 @@ const ProductCreateEdit = () => {
                     <>
                       <div>
                         <MDBInput {...field} label={'Name'}
-                                  className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
-                                  icon="envelope" group type="text" error="wrong"
-                                  success="right"/>
+                          className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
+                          icon="envelope" group type="text" error="wrong"
+                          success="right"/>
                         <p style={{ color: 'red' }}>{meta.touched && meta.error && meta.error}</p>
                       </div>
                     </>
@@ -129,9 +132,9 @@ const ProductCreateEdit = () => {
                     <>
                       <div>
                         <MDBInput {...field} label={'Price'}
-                                  className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
-                                  icon="envelope" group type="number" error="wrong"
-                                  success="right"/>
+                          className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
+                          icon="envelope" group type="number" error="wrong"
+                          success="right"/>
                         <p style={{ color: 'red' }}>{meta.touched && meta.error && meta.error}</p>
                       </div>
                     </>
@@ -143,15 +146,50 @@ const ProductCreateEdit = () => {
                     <>
                       <div>
                         <MDBInput {...field} label={'Platform'}
-                                  className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
-                                  icon="envelope" group type="text" error="wrong"
-                                  success="right"/>
+                          className={meta.touched ? meta.error ? 'is-invalid' : 'is-valid' : ''}
+                          icon="envelope" group type="text" error="wrong"
+                          success="right"/>
                         <p style={{ color: 'red' }}>{meta.touched && meta.error && meta.error}</p>
                       </div>
                     </>
                   )}
                 />
+
                 <Field id={'categories'} name={'categories'} component={SelectField} options={categoriesOptions}/>
+                <Field
+                  name="productImage"
+                  render={({ field, meta, form }: any) => {
+                    console.log('form',form);
+                    console.log('field', field);
+
+                    return (
+                      <>
+                        <label style={{ margin: '1rem 0' }}>Product Image</label>
+                        <div className="input-group">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroupFileAddon01">
+                            Upload
+                            </span>
+                          </div>
+                          <div className="custom-file">
+                            <input
+                              type="file"
+                              className="custom-file-input"
+                              id="inputGroupFile01"
+                              aria-describedby="inputGroupFileAddon01"
+                              onChange={(e) => {
+                                form.setFieldValue('productImage', e?.target?.files?.[0] || '');
+                              }}
+                            />
+                            <label className="custom-file-label" htmlFor="inputGroupFile01">
+                              {field.value.name || 'Choose a file'}
+                            </label>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  }}
+                />
                 <div className="text-center">
                   <MDBBtn outline color="primary" type={'submit'}>{editMode ? 'Save' : 'Create'}</MDBBtn>
                 </div>

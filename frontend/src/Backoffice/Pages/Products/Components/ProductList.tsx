@@ -104,7 +104,9 @@ const ProductList = () => {
                       name: prod.name,
                       categories: prod.categories,
                       price: prod.price,
-                      console: prod.console
+                      console: prod.console,
+                      productImage: prod.productImage
+
                     }
                   }
                 ));
@@ -133,6 +135,7 @@ const ProductList = () => {
               name: '',
               price: 0,
               console: '',
+              productImage: ''
             }
           }
         ));

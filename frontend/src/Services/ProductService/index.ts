@@ -9,7 +9,7 @@ const ProductService = {
       return {
         hasError: false,
         data: response?.data,
-      }
+      };
     } catch (e) {
       return {
         hasError: true,
@@ -19,15 +19,20 @@ const ProductService = {
   },
   createUpdateProduct: async (payload: CreateUpdateProduct): Promise<ServicesOutput<GetProductsResponse>> => {
     try {
-      const servicePayload: any = {
-        ...payload
-      };
-      if(!payload.id) {
-        delete servicePayload._id;
-        delete servicePayload.id;
+      const formData = new FormData();
+      if(payload.id) {
+        formData.append('_id', payload.id);
       }
-
-      const response = await axios.post('/api/products', servicePayload);
+      formData.append('name', payload.name);
+      formData.append('price', JSON.stringify(payload.price));
+      formData.append('categories', JSON.stringify(payload.categories));
+      formData.append('console', payload.console);
+      formData.append('productImage', payload.productImage);
+      const response = await axios.post('/api/products', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      });
       return {
         hasError: false,
         data: response.data,

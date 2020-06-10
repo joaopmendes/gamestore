@@ -10,6 +10,7 @@ export interface CreateUpdateProduct {
  price: number;
  categories: string[];
  console: string;
+ productImage: any;
 }
 
 export interface RemoveProductsPayload {

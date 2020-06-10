@@ -21,7 +21,8 @@ const initialState: IInitialState = {
       name: '',
       categories: [],
       price: 0,
-      console: ''
+      console: '',
+      productImage: '',
     }
   }
 };

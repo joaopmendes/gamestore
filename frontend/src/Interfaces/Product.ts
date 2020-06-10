@@ -7,4 +7,5 @@ export type Product = {
   categories: Category[];
   price: number;
   console: string;
+  productImage: string;
 }

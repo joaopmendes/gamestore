@@ -3,7 +3,6 @@ import React from 'react';
 import Select from 'react-select';
 
 export const SelectField: React.FC<any> = (props) => {
-  console.log("props", props)
   const {field, form, options} = props;
   return (
     <>
