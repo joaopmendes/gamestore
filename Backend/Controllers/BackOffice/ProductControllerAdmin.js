@@ -5,9 +5,8 @@ const createUpdateProduct = async (
   id = mongoose.Types.ObjectId(),
   name,
   categories,
-  type,
   price,
-  console,
+  consoleInput,
 ) => {
   for (const categoryId of categories) {
     try {
@@ -18,7 +17,7 @@ const createUpdateProduct = async (
   }
   return await models.Product.findByIdAndUpdate(
     id,
-    { name, categories, price, console },
+    { name, categories, price, console: consoleInput },
     {
       new: true,
       upsert: true,
@@ -35,7 +34,12 @@ module.exports = {
     try {
       return res
         .status(200)
-        .json({ products: await models.Product.find().select('-__v').populate({path: 'categories', select: '-__v' }) });
+        .json({
+          products: await models.Product.find().select('-__v').populate({
+            path: 'categories',
+            select: '-__v',
+          }),
+        });
     } catch (e) {
       return next(createError(423, 'Could not process your request.'));
     }
@@ -59,20 +63,23 @@ module.exports = {
   },
   store: async (req, res, next) => {
     try {
-      const { id, name, categories, type, price, console } = req.body;
+      const { _id, name, categories, price, console: consoleInput } = req.body;
 
       const product = await createUpdateProduct(
-        id,
+        _id,
         name,
-        categories,
-        type,
-        price,
-        console,
+        JSON.parse(categories),
+        JSON.parse(price),
+        consoleInput,
       );
-
+      if (req.file) {
+        product.productImage = req.file.path.replace(/\\/g, '/');
+        await product.save();
+      }
       return res.status(201).json({ product });
     } catch (e) {
-      return next(createError(500, 'Unable to remove ids'));
+      console.log(e);
+      return next(createError(500, 'Unable To update product'));
     }
   },
 };

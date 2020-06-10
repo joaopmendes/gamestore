@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(require('morgan')('combined'))
 
 //* Public Folder
-app.use(express.static(path.join(__dirname, 'public')))
+app.use('/public', express.static(path.join(__dirname, 'public')))
 app.use(express.static(path.join(__dirname, 'frontend')))
 
 //* API ROUTES
