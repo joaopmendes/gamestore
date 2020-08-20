@@ -10,7 +10,7 @@
     "server": "nodemon index.js"
   },
   "dependencies": {
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
